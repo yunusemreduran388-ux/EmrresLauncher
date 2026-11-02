@@ -1,0 +1,100 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:EmrresLauncherGui"
+        x:Class="EmrresLauncherGui.MainWindow"
+        Title="EmresLauncher - Minecraft &amp; Mod Manager"
+        Width="620" Height="540"
+        WindowStartupLocation="CenterScreen"
+        Background="#18181b">
+
+    <TabControl Background="Transparent" Margin="10">
+        
+        <!-- ================= SEKME 1: OYNA ================= -->
+        <TabItem Header="🎮 Oyna" FontSize="14" Foreground="#e4e4e7">
+            <Border Padding="20">
+                <StackPanel Spacing="12" VerticalAlignment="Center">
+                    <TextBlock Text="⛏️ EmresLauncher" FontSize="22" FontWeight="Bold" Foreground="#22c55e" HorizontalAlignment="Center"/>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Kullanıcı Adı:" Foreground="#a1a1aa" FontSize="12"/>
+                        <TextBox x:Name="TxtUsername" Text="EmrePlayer" 
+                                 Background="#27272a" Foreground="White" BorderBrush="#3f3f46" CornerRadius="6" Padding="8"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Minecraft Sürümü:" Foreground="#a1a1aa" FontSize="12"/>
+                        <ComboBox x:Name="CmbVersions" HorizontalAlignment="Stretch" Background="#27272a" Foreground="White" BorderBrush="#3f3f46" CornerRadius="6"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock x:Name="LblRam" Text="Verilecek RAM: 4 GB" Foreground="#a1a1aa" FontSize="12"/>
+                        <Slider x:Name="SliderRam" Minimum="2" Maximum="16" Value="4" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="LblStatus" Text="Sürümler taranıyor..." FontSize="12" Foreground="#38bdf8" HorizontalAlignment="Center"/>
+                    <ProgressBar x:Name="ProgBar" Height="10" Minimum="0" Maximum="100" Value="0" Foreground="#22c55e" Background="#27272a" CornerRadius="5"/>
+
+                    <Button x:Name="BtnLaunch" Content="Oyunu Başlat" Click="BtnLaunch_Click"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="#22c55e" Foreground="#09090b" FontWeight="Bold" FontSize="15" Padding="10" CornerRadius="8" Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+        </TabItem>
+
+        <!-- ================= SEKME 2: YÜKLÜ MODLAR ================= -->
+        <TabItem Header="📦 Yüklü Modlar" FontSize="14" Foreground="#e4e4e7">
+            <Grid RowDefinitions="Auto, *, Auto" Margin="10">
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,10">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Kurulu Modlar (.minecraft/mods)" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Aç/Kapat yaparak modu silmeden devre dışı bırakabilirsin." FontSize="11" Foreground="#a1a1aa"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="📂 Klasörü Aç" Click="BtnOpenFolder_Click" Background="#27272a" Foreground="White" CornerRadius="6" Padding="8,4"/>
+                </Grid>
+
+                <ListBox Grid.Row="1" x:Name="LstMods" Background="#27272a" Foreground="White" CornerRadius="8" BorderBrush="#3f3f46" BorderThickness="1"/>
+
+                <Grid Grid.Row="2" ColumnDefinitions="*, *, *, Auto" Margin="0,10,0,0">
+                    <Button Grid.Column="0" Content="➕ Manuel Mod (.jar)" Click="BtnAddMod_Click" Background="#3b82f6" Foreground="White" Margin="0,0,5,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    <Button Grid.Column="1" Content="🔄 Aç / Kapat" Click="BtnToggleMod_Click" Background="#eab308" Foreground="Black" FontWeight="Bold" Margin="0,0,5,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    <Button Grid.Column="2" Content="🗑️ Sil" Click="BtnDeleteMod_Click" Background="#ef4444" Foreground="White" Margin="0,0,5,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    <Button Grid.Column="3" Content="⟳ Yenile" Click="BtnRefreshMods_Click" Background="#3f3f46" Foreground="White" Padding="10,0"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+        <!-- ================= SEKME 3: İNTERNETTEN MOD İNDİR ================= -->
+        <TabItem Header="🌐 Mod İndir (Modrinth)" FontSize="14" Foreground="#e4e4e7">
+            <Grid RowDefinitions="Auto, *, Auto" Margin="10">
+                <!-- Arama Barı -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,10">
+                    <TextBox Grid.Column="0" x:Name="TxtModSearch" PlaceholderText="Mod adı yazın (Örn: Sodium, FerriteCore, JEI)..."
+                             Background="#27272a" Foreground="White" BorderBrush="#3f3f46" CornerRadius="6" Padding="8" Margin="0,0,8,0"/>
+                    <Button Grid.Column="1" Content="🔍 Ara" Click="BtnSearchOnlineMods_Click"
+                            Background="#22c55e" Foreground="#09090b" FontWeight="Bold" CornerRadius="6" Padding="15,8" Cursor="Hand"/>
+                </Grid>
+
+                <!-- Bulunan Modlar Listesi (x:DataType eklendi) -->
+                <ListBox Grid.Row="1" x:Name="LstOnlineMods" Background="#27272a" Foreground="White" CornerRadius="8" BorderBrush="#3f3f46" BorderThickness="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:ModrinthResult">
+                            <StackPanel Margin="5">
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold" Foreground="#22c55e" FontSize="14"/>
+                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#a1a1aa" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- İndirme Durumu ve İndir Butonu -->
+                <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="0,10,0,0">
+                    <TextBlock Grid.Column="0" x:Name="LblOnlineStatus" Text="Aramak istediğin modu yazıp 'Ara'ya bas."
+                               VerticalAlignment="Center" Foreground="#38bdf8" FontSize="12" TextWrapping="Wrap"/>
+                    <Button Grid.Column="1" x:Name="BtnDownloadMod" Content="⬇️ Seçileni Tek Tıkla İndir" Click="BtnDownloadOnlineMod_Click"
+                            Background="#3b82f6" Foreground="White" FontWeight="Bold" CornerRadius="6" Padding="12,8" Cursor="Hand"/>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+    </TabControl>
+</Window>
